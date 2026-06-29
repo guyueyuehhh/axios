@@ -143,6 +143,30 @@ describe('helpers::buildURL', () => {
     expect(buildURL('/foo', params, customSerializer)).toEqual('/foo?rendered');
   });
 
+  it('should normalize a leading ? in custom serialize return value when url has no query', () => {
+    expect(
+      buildURL('/users', { page: 1 }, { serialize: () => '?page=1' })
+    ).toEqual('/users?page=1');
+  });
+
+  it('should normalize a leading ? in custom serialize return value when url already has query', () => {
+    expect(
+      buildURL('/users?active=1', { page: 1 }, { serialize: () => '?page=1' })
+    ).toEqual('/users?active=1&page=1');
+  });
+
+  it('should not change behavior when custom serialize return value has no leading ?', () => {
+    expect(
+      buildURL('/users', { page: 1 }, { serialize: () => 'page=1' })
+    ).toEqual('/users?page=1');
+  });
+
+  it('should normalize a leading ? for multiple params returned by custom serialize', () => {
+    expect(
+      buildURL('/users', { page: 1 }, { serialize: () => '?page=1&size=2' })
+    ).toEqual('/users?page=1&size=2');
+  });
+
   it('should ignore inherited serializer options', () => {
     let serializeInvoked = false;
     let encodeInvoked = false;
